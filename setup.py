@@ -6,5 +6,5 @@ setup(
   author = 'Ha Hoang Hao',
   packages = ['hcrawler'],
   description = 'Crawl Tiki web data using selenium',
-  install_requires = ['pandas', 'numpy', 'selenium', 'threading', 'queue', 're', 'ast', 'pickle']
+  install_requires = ['pandas', 'numpy', 'selenium', 'queue', 're', 'ast', 'pickle']
 )
