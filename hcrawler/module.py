@@ -141,8 +141,19 @@ class func:
                 print(f'{threading.current_thread().name} - Prevent Product link not exist also')
                 pl = []
         page_features = []
-        for prod_link in pl:
-            driver.get(prod_link)
+        for i, prod_link in enumerate(pl):
+            try:
+                driver.get(prod_link)
+            except:
+                print(f'{threading.current_thread().name} get prod_link unsuccessful. Try to get again ...')
+                try:
+                    driver.get(prod_link)
+                    print(f'{threading.current_thread().name} Try to get again successfully')
+                except:
+                    print(f'{threading.current_thread().name} Cant get prod_link, get next link')
+                    driver.get(pl[i + 1])
+                    print(f'{threading.current_thread().name} Get next link successfully')
+                    
             sleep(2)
             driver.maximize_window()
 
