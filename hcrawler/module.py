@@ -32,8 +32,8 @@ class func:
         elif elem_type == 'info_elems':
             info_elems = driver.find_elements(By.CSS_SELECTOR, elem)
             title_elem, detail_info_elem, describe_elem = full_info_elem[0], full_info_elem[1], full_info_elem[2]
+            info, describe, seller, seller_star, seller_reviews_quantity, seller_follow = None, None, None, None, None, None
             for i in info_elems:
-                info, describe, seller, seller_star, seller_reviews_quantity, seller_follow = None, None, None, None, None, None
                 try:
                     title = i.find_element(By.CSS_SELECTOR, title_elem)
                     title = title.text
@@ -141,7 +141,7 @@ class func:
                 print(f'{threading.current_thread().name} - Prevent Product link not exist also')
                 pl = []
         page_features = []
-        for i, prod_link in enumerate(pl):
+        for i, prod_link in enumerate(pl[:5]):
             try:
                 driver.get(prod_link)
             except:
@@ -257,7 +257,7 @@ class func:
             result = pd.Series([float(i.replace('%', ''))/ 100 if isinstance(i, str) else i for i in col], name = col.name)
 
         elif col.name == 'sale_quantity':
-            result = col.apply(lambda x: float(re.sub(r'[^0-9]', '', x) if not pd.isna(x) else None))
+            result = col.apply(lambda x: float(re.sub(r'[^0-9]', '', x) if not None else None))
 
         elif col.name == 'rating':
             rating_star = []
