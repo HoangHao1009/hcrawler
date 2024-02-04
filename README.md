@@ -17,7 +17,9 @@ pip install -e .
 from hcrawler import module
 
 #category link crawler'll take
-root_link = 'https://tiki.vn/sach-truyen-tieng-viet/c316'
+#example for book, it may be large category: dien-thoai-may-tinh-bang, thoi-trang-nu, ...
+#or small category: sach-van-hoc, sach-kinh-te,..
+root_link = 'https://tiki.vn/sach-truyen-tieng-viet/c316' 
 #Numbers of chrome drivers will open for crawl
 n_browers = 10
 #CSS SELECTOR for elements (those behind are collected in Feb-4-2024)
