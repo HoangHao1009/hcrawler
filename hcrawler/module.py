@@ -341,12 +341,9 @@ class TikiCrawler(func):
 
     def run(self):
         threads = []
-        i = 1
-        thread_name = f'thread {i}'
         for driver in self.drivers:
             print('--Running--')
-            t = threading.Thread(name = thread_name,
-                                 target = func.get_data, 
+            t = threading.Thread(target = func.get_data, 
                                  args = (driver, self.que, self.prod_link_elem, 
                                          self.category_bar_elem, self.image_elem, 
                                          self.price_elem, self.discount_elem,
@@ -354,10 +351,8 @@ class TikiCrawler(func):
                                          self.info_elem, self.detail_info_elem, 
                                          self.describe_elem, self.extend_page_elem,
                                          self.title_elem, self.preventive_prod_link_elem))
-            threads.append(t)
-            i += 1
-        for t in threads:
             t.start()
+            threads.append(t)
         for t in threads:
             t.join()
         results = []
