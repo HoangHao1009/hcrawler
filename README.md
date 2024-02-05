@@ -21,7 +21,7 @@ from hcrawler import module
 #or small category: sach-van-hoc, sach-kinh-te,..
 root_link = 'https://tiki.vn/sach-truyen-tieng-viet/c316' 
 #Numbers of chrome drivers will open for crawl
-n_browers = 10
+n_browers = 5
 #CSS SELECTOR for elements (those behind are collected in Feb-4-2024)
 prod_link_elem = '.style__ProductLink-sc-1axza32-2.ezgRFw.product-item'
 category_bar_elem = '.breadcrumb'
@@ -60,14 +60,9 @@ crawler = module.TikiCrawler(root_link, n_browers,
 
 ##### 3.1. If you just want to crawl root_link
 ```python
-#open n_browsers you had set
-crawler.open_drivers()
-#crawling
 crawler.crawl_multipage(50)
 #save data you've crawled
 crawler.save('Tikibook50crawler.pickle')
-#close browsers
-crawler.close()
 ```
 
 ##### 3.2. If you want to crawl detail category in root_link
@@ -76,9 +71,7 @@ crawler.close()
 subcrawler = crawler.sub_crawler(sub_link_elem, preventive_sub_link_elem)
 #Example: crawling for all sub_crawler (you can chose which you want to crawl)
 for name, crawler in subcrawler.items():
-  crawler.open_drivers()
   crawler.crawl_multipage(50)
-  crawler.close()
   save_data = crawler.save(f'{name}_obj.pickle')
 ```
 
