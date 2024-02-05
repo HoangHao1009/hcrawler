@@ -32,58 +32,58 @@ class func:
         elif elem_type == 'info_elems':
             info_elems = driver.find_elements(By.CSS_SELECTOR, elem)
             title_elem, detail_info_elem, describe_elem = full_info_elem[0], full_info_elem[1], full_info_elem[2]
-            info, describe, seller, seller_star, seller_reviews_quantity, seller_follow = None, None, None, None, None, None
+            info, describe, seller, seller_star, seller_reviews_quantity, seller_follow = np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
             for i in info_elems:
                 try:
                     title = i.find_element(By.CSS_SELECTOR, title_elem)
                     title = title.text
                 except:
-                    title = None
+                    title = np.nan
                 if title == 'Thông tin chi tiết':
                     try:
                         info_row = i.find_elements(By.CSS_SELECTOR, detail_info_elem)
                         info = [i.text.split('\n') for i in info_row]
                     except Exception as e:
                         print(f'info except: {threading.current_thread().name} - {type(e).__name__}')
-                        info = None
+                        info = np.nan
                         print('detail_info nan')
                 elif title == 'Mô tả sản phẩm':
                     try:
                         describe = i.find_element(By.CSS_SELECTOR, describe_elem).text
                     except Exception as e:
                         print(f'describe except: {threading.current_thread().name} - {type(e).__name__}')
-                        describe = None
+                        describe = np.nan
                         print('describe nan')
                 elif title == 'Thông tin nhà bán':
                     try:
                         seller = i.find_element(By.CSS_SELECTOR, '.seller-name').text.split(' ')[0]
                     except Exception as e:
                         print(f'seller except: {threading.current_thread().name} - {type(e).__name__}')
-                        seller = None
+                        seller = np.nan
                         print('seller nan')
                     try:
                         seller_evaluation_elems = i.find_element(By.CSS_SELECTOR, '.item.review')
                     except Exception as e:
                         print(f'seller eval except: {threading.current_thread().name} - {type(e).__name__}')
-                        seller_evaluation_elems = None
+                        seller_evaluation_elems = np.nan
                         print('seller_evaluation nan')
                     try:
                         seller_star = seller_evaluation_elems.find_element(By.CSS_SELECTOR, '.title').text
                     except Exception as e:
                         print(f'seller star except: {threading.current_thread().name} - {type(e).__name__}')
-                        seller_star = None
+                        seller_star = np.nan
                         print('seller_star nan')
                     try:
                         seller_reviews_quantity = seller_evaluation_elems.find_element(By.CSS_SELECTOR, '.sub-title').text
                     except Exception as e:
                         print(f'seller review except: {threading.current_thread().name} - {type(e).__name__}')
-                        seller_reviews_quantity = None
+                        seller_reviews_quantity = np.nan
                         print('seller_reviews_quantity nan') 
                     try:
                         seller_follow = i.find_element(By.CSS_SELECTOR, '.item.normal .title').text
                     except Exception as e:
                         print(f'seller follow except: {threading.current_thread().name} - {type(e).__name__}')
-                        seller_follow = None
+                        seller_follow = np.nan
                         print('seller_follow nan')
             output = (info, describe, seller, seller_star, seller_reviews_quantity, seller_follow)
         else:
@@ -104,17 +104,24 @@ class func:
                 sleep(scroll_interval)
         except Exception as e:
             print(f'scroll except: {threading.current_thread().name} - {type(e).__name__}')
-            sleep(10)
             func.scroll(driver, scroll_iters = 10, scroll_amount = 300, scroll_interval = 0.2)
             print(f'Try to re-scroll sucessfully')
 
+    @staticmethod
+    def get(driver, link):
+        try:
+            driver.get(link)
+        except:
+            driver.refresh()
+            driver.get(link)
 
     @staticmethod
     def load_multi_page(driver, n, link = str):
         driver.maximize_window()
         link = f'{link}?page={n}'
         driver.get(link)
-        sleep(3)
+        sleep(0.5)
+
     @staticmethod
     def get_data(driver, que,
                 prod_link_elem, category_bar_elem, image_elem, 
@@ -141,26 +148,19 @@ class func:
                 print(f'{threading.current_thread().name} - Prevent Product link not exist also')
                 pl = []
         page_features = []
-        for i, prod_link in enumerate(pl):
+        for i, prod_link in enumerate(pl[:3]):
             try:
-                driver.get(prod_link)
+                func.get(driver, pl[i])
             except:
-                print(f'{threading.current_thread().name} get prod_link unsuccessful. Try to get again ...')
-                try:
-                    driver.get(prod_link)
-                    print(f'{threading.current_thread().name} Try to get again successfully')
-                except:
-                    print(f'{threading.current_thread().name} Cant get prod_link, get next link')
-                    driver.get(pl[i + 1])
-                    print(f'{threading.current_thread().name} Get next link successfully')
-                    
-            sleep(2)
+                print('Prod_link die. Get next prod_link')
+                func.get(driver, pl[i + 1])
+
             driver.maximize_window()
 
             #expandpage
             func.scroll(driver, 15, 300, 0.2)
             try:
-                elem_to_wait = func.wait(driver, 10, extend_page_elem)
+                elem_to_wait = func.wait(driver, 2, extend_page_elem)
                 elem_to_wait.click()
             except ElementClickInterceptedException:
                 print(f'click except: {threading.current_thread().name}')
@@ -173,51 +173,51 @@ class func:
                 print(f'Expand page not exist')
             #cate
             try:
-                func.wait(driver, 2, category_bar_elem)
+                func.wait(driver, 1, category_bar_elem)
                 cate = func.get_elem(driver, category_bar_elem, elem_type = 'cate')
             except Exception as e:
                 print(f'cate except: {threading.current_thread().name} - {type(e).__name__}')
-                cate = None
+                cate = np.nan
                 print('cate nan')
             #img
             try:
-                func.wait(driver, 2, image_elem)
+                func.wait(driver, 1, image_elem)
                 img = func.get_elem(driver, image_elem, elem_type = 'img')
             except Exception as e:
                 print(f'img except: {threading.current_thread().name} - {type(e).__name__}')
-                img = None
+                img = np.nan
                 print('img nan')
             #price
             try:
-                func.wait(driver, 2, price_elem)
+                func.wait(driver, 1, price_elem)
                 price = func.get_elem(driver, price_elem, elem_type = 'price')
             except Exception as e:
                 print(f'price except: {threading.current_thread().name} - {type(e).__name__}')
-                price = None
+                price = np.nan
                 print('price nan')
             #discount
             try:
-                func.wait(driver, 2, discount_elem)
+                func.wait(driver, 1, discount_elem)
                 discount = func.get_elem(driver, discount_elem, elem_type = 'discount')
             except Exception as e:
                 print(f'discount except: {threading.current_thread().name} - {type(e).__name__}')
-                discount = None
+                discount = np.nan
                 print('discount nan')
             #rating
             try:
-                func.wait(driver, 2, rating_elem)
+                func.wait(driver, 1, rating_elem)
                 rating = func.get_elem(driver, rating_elem, elem_type = 'rating')
             except Exception as e:
                 print(f'rating except: {threading.current_thread().name} - {type(e).__name__}')
-                rating = None
+                rating = np.nan
                 print('rating nan')
             #sales quant
             try:
-                func.wait(driver, 2, sales_quantity_elem)
+                func.wait(driver, 1, sales_quantity_elem)
                 sale_q = func.get_elem(driver, sales_quantity_elem, elem_type = 'sale_q')
             except Exception as e:
                 print(f'sale_q except: {threading.current_thread().name} - {type(e).__name__}')
-                sale_q = None
+                sale_q = np.nan
                 print('sale_q nan')
             #full_info
                 
@@ -240,58 +240,93 @@ class func:
             result = col
 
         elif col.name == 'category':
-            if isinstance(col[0], str):
-                col = [ast.literal_eval(i) for i in col]
-                col = [i[0].split(delimiter) for i in col]
-            else:
-                col = [i[0].split(delimiter) for i in col]
-            name = [i[-1] for i in col]
-            detail_cate = [i[-2] for i in col]
-            large_cate = [i[-3] for i in col]
+            x = []
+            for i in col:
+                if isinstance(i, str):
+                    i = ast.literal_eval(i).split(delimiter)
+                elif isinstance(i, list):
+                    i = i[0].split(delimiter)
+                else:
+                    i = [np.nan, np.nan, np.nan]
+                x.append(i)
+            name = []
+            detail_cate = []
+            large_cate = []
+            for i in x:
+                name.append(i[-1])
+                detail_cate.append(i[-2])
+                large_cate.append(i[-3])
+
             result = pd.DataFrame({'name': name, 'detail_cate': detail_cate, 'large_cate': large_cate})
 
         elif col.name == 'price':
-            result = col.apply(lambda x: int(re.sub(r'[^0-9]', '', x) if isinstance(x, str) else x))
+            prices = []
+            for i in col:
+                try:
+                    p = int(re.sub(r'[^0-9]', '', i))
+                except:
+                    p = np.nan
+                prices.append(p)
+            result = pd.Series(prices, name = col.name)
 
         elif col.name == 'discount':
-            result = pd.Series([float(i.replace('%', ''))/ 100 if isinstance(i, str) else i for i in col], name = col.name)
+            discounts = []
+            for i in col:
+                try:
+                    d = float(i.replace('%', ''))/ 100
+                except:
+                    d = np.nan
+                discounts.append(d)
+            result = pd.Series(discounts, name = col.name)
 
         elif col.name == 'sale_quantity':
-            result = col.apply(lambda x: float(re.sub(r'[^0-9]', '', x) if not None else None))
+            sale_quantities = []
+            for i in col:
+                try:
+                    sq = float(re.sub(r'[^0-9]', '', x))
+                except:
+                    sq = np.nan
+                sale_quantities.append(sq)
+            result = pd.Series(sale_quantities, name = col.name)
 
         elif col.name == 'rating':
             rating_star = []
             rating_quantity = []
             for i in col:
-                if not isinstance(i, float):
+                try:
                     rs, rq = i.split(delimiter)
                     rs = float(re.sub(r'[^0-9]', '', rs)) / 10
                     rq = int(re.sub(r'[^0-9]', '', rq))
+                except:
+                    rs, rq = np.nan, np.nan
                 rating_star.append(rs)
                 rating_quantity.append(rq)
             result = pd.DataFrame({'rating_star': rating_star, 'rating_quantity': rating_quantity})
 
         elif col.name == 'info':
-            if isinstance(col[0], str):
-                col = [ast.literal_eval(i) if isinstance(i, str) else i for i in col]
-            else:
-                col = col
-            col_name = [v[0] for i in col for v in i]
-            col_name = set(col_name)
+            col = [ast.literal_eval(i) if isinstance(i, str) else i for i in col]
+            col_name = []
+            for i in col:
+                if not isinstance(i, float):
+                    for v in i:
+                        if v[0] not in col_name:
+                            col_name.append(v[0])
             di = {i: [] for i in col_name}
+            processed = []
             for i in col:
-                info_i = []
+                try:
+                    info_i = []
+                    for v in i:
+                        info_i.append(v[0])
+                    lack = [i for i in di.keys() if i not in info_i]
+                    for l in lack:
+                        i.append([l, np.nan])
+                except:
+                    i = [[k, np.nan] for k in di.keys()]
+                processed.append(i)
+            for i in processed:
                 for v in i:
-                    info_i.append(v[0])
-                lack = [i for i in di.keys() if i not in info_i]
-                for l in lack:
-                    i.append([l, None])
-            for i in col:
-                for v in i:
-                    try:
-                        di[v[0]].append(v[1])
-                    except:
-                        di[v[0]].append(None)
+                    di[v[0]].append(v[1])
 
             result = pd.DataFrame(di)
 
@@ -303,7 +338,7 @@ class func:
                     cleaned_str = cleaned_str.replace('k', '000').replace('tr', '000000')
                     i = float(cleaned_str)
                 except:
-                    i = None
+                    i = np.nan
                 result.append(i)
             result = pd.Series(result, name = col.name)
 
@@ -321,7 +356,8 @@ class TikiCrawler(func):
                  title_elem,
                  preventive_prod_link_elem,
                  all_data = None,
-                 wrangled_data = None):
+                 wrangled_data = None,
+                 be_wrangled = False):
         self.root_link = root_link
         self.n_browers = n_browers
         self.idx_page = [i for i in range(1, n_browers + 1)]
@@ -341,6 +377,7 @@ class TikiCrawler(func):
         self.title_elem = title_elem
         self.all_data = all_data
         self.wrangled_data = wrangled_data
+        self.be_wrangled = be_wrangled
     
     def open_drivers(self):
         self.drivers = [webdriver.Chrome() for _ in range(self.n_browers)]
@@ -373,9 +410,12 @@ class TikiCrawler(func):
     
     def crawl_multipage(self, page_crawl = 3):
         self.all_data = pd.DataFrame()
+        i = 1
         while self.idx_page[0] < page_crawl:
+            print(f'--------------------------------------PHARSE {i}--------------------------------------')
+            self.open_drivers()
             self.load_multi_browers()
-            sleep(5)
+            sleep(0.5)
             all_features = self.run()
             page_df = pd.DataFrame(
                 all_features,
@@ -387,6 +427,9 @@ class TikiCrawler(func):
             )
             self.all_data = pd.concat([self.all_data, page_df], axis = 0)
             self.idx_page = [i + self.n_browers for i in self.idx_page]
+            self.close()
+            i += 1
+
         
     def wrangling_data(self, delimiter = None):
         data = []
@@ -394,6 +437,7 @@ class TikiCrawler(func):
             part = func.wrangling(self.all_data[col], delimiter)
             data.append(part)
         self.wrangled_data = pd.concat(data, axis = 1)
+        self.be_wrangled = True
 
     def sub_crawler(self, sub_link_elem, preventive_sub_link_elem):
         temp_drive = webdriver.Chrome()
