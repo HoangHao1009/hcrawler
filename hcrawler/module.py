@@ -280,14 +280,14 @@ class func:
             result = pd.Series(discounts, name = col.name)
 
         elif col.name == 'sale_quantity':
-            sale_quantities = []
+            c = []
             for i in col:
                 try:
-                    sq = float(re.sub(r'[^0-9]', '', x))
+                    x = float(''.join(re.findall(r'\d', i)))
                 except:
-                    sq = np.nan
-                sale_quantities.append(sq)
-            result = pd.Series(sale_quantities, name = col.name)
+                    x = np.nan
+                c.append(x)
+            result = pd.Series(c, name = col.name)
 
         elif col.name == 'rating':
             rating_star = []
@@ -341,6 +341,8 @@ class func:
                     i = np.nan
                 result.append(i)
             result = pd.Series(result, name = col.name)
+        else:
+            col = col
 
         return result.reset_index(drop = True)
 
