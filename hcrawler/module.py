@@ -357,7 +357,7 @@ class TikiCrawler(func):
                  preventive_prod_link_elem,
                  all_data = None,
                  wrangled_data = None,
-                 be_wrangled = False):
+                 be_wrangled = None):
         self.root_link = root_link
         self.n_browers = n_browers
         self.idx_page = [i for i in range(1, n_browers + 1)]
