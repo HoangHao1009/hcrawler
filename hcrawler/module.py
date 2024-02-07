@@ -148,7 +148,7 @@ class func:
                 print(f'{threading.current_thread().name} - Prevent Product link not exist also')
                 pl = []
         page_features = []
-        for i, prod_link in enumerate(pl[:3]):
+        for i, prod_link in enumerate(pl):
             try:
                 func.get(driver, pl[i])
             except:
