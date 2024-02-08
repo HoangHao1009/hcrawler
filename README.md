@@ -67,12 +67,18 @@ crawler.save('Tikibook50crawler.pickle')
 
 ##### 3.2. If you want to crawl detail category in root_link
 ```python
-#initialize subcrawler - a dict {category name : crawler} with each Crawler for each detail category link
-subcrawler = crawler.sub_crawler(sub_link_elem, preventive_sub_link_elem)
-#Example: crawling for all sub_crawler (you can chose which you want to crawl)
-for name, crawler in subcrawler.items():
-  crawler.crawl_multipage(50)
-  save_data = crawler.save(f'{name}_obj.pickle')
+#initialize subcrawler: you need to put a Crawler that have already set up
+module.SubCrawler.get_crawlers(crawler, sub_link_elem, preventive_sub_link_elem)
+
+#you can take a subcrawler you want in
+subcrawlers = module.SubCrawler.crawlers -> a list of subcrawlers
+#enter to crawler you want with .name and crawl with .core
+#example
+for crawler in subcrawlers:
+  if crawler.name == 'Sách văn học':
+    crawler.core.crawl_multipage(50)
+#or you can crawl by all crawlers
+module.SubCrawler.super_crawling(50)
 ```
 
 #### 4. Take data
