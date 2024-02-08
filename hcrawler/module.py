@@ -440,32 +440,6 @@ class TikiCrawler(func):
             data.append(part)
         self.wrangled_data = pd.concat(data, axis = 1)
         self.be_wrangled = True
-
-    def sub_crawler(self, sub_link_elem, preventive_sub_link_elem):
-        temp_drive = webdriver.Chrome()
-        temp_drive.get(self.root_link)
-        try:
-            func.wait(temp_drive, 10, sub_link_elem)
-            sub_link_elem = temp_drive.find_elements(By.CSS_SELECTOR, sub_link_elem)
-        except:
-            func.wait(temp_drive, 10, preventive_sub_link_elem)
-            sub_link_elem = temp_drive.find_elements(By.CSS_SELECTOR, preventive_sub_link_elem)
-        info = [(i.text, i.get_attribute('href')) for i in sub_link_elem]
-        sub_crawler = {}
-        for name, link in info:
-            sub_crawler[name] = TikiCrawler(
-                link,
-                self.n_browers,
-                self.prod_link_elem, 
-                self.category_bar_elem, self.image_elem, 
-                self.price_elem, self.discount_elem,
-                self.sales_quantity_elem, self.rating_elem, 
-                self.info_elem, self.detail_info_elem, 
-                self.describe_elem, self.extend_page_elem,
-                self.title_elem, self.preventive_prod_link_elem
-            )
-        temp_drive.close()
-        return sub_crawler
     
     def close(self):
         for driver in self.drivers:
@@ -482,3 +456,48 @@ class TikiCrawler(func):
         with open(pickle_file_path, 'rb') as file:
             data_dict = pickle.load(file)
         return cls(**data_dict)
+
+
+class SubCrawler:
+    crawlers = []
+    def __init__(self, name, core):
+        self.name = name
+        self.core = core
+        self.done = False
+        self.error = False
+
+    @classmethod
+    def get_crawlers(cls, TikiCrawlerObj, sub_link_elem, preventive_sub_link_elem):
+        temp_drive = webdriver.Chrome()
+        temp_drive.get(TikiCrawlerObj.root_link)
+        try:
+            func.wait(temp_drive, 10, sub_link_elem)
+            sub_link_elem = temp_drive.find_elements(By.CSS_SELECTOR, sub_link_elem)
+        except:
+            func.wait(temp_drive, 10, preventive_sub_link_elem)
+            sub_link_elem = temp_drive.find_elements(By.CSS_SELECTOR, preventive_sub_link_elem)
+        info = [(i.text, i.get_attribute('href')) for i in sub_link_elem]
+        for name, link in info:
+            core = TikiCrawler(
+                link,
+                TikiCrawlerObj.n_browers,
+                TikiCrawlerObj.prod_link_elem, 
+                TikiCrawlerObj.category_bar_elem, TikiCrawlerObj.image_elem, 
+                TikiCrawlerObj.price_elem, TikiCrawlerObj.discount_elem,
+                TikiCrawlerObj.sales_quantity_elem, TikiCrawlerObj.rating_elem, 
+                TikiCrawlerObj.info_elem, TikiCrawlerObj.detail_info_elem, 
+                TikiCrawlerObj.describe_elem, TikiCrawlerObj.extend_page_elem,
+                TikiCrawlerObj.title_elem, TikiCrawlerObj.preventive_prod_link_elem
+            )
+            subcrawler = SubCrawler(name, core)
+            cls.crawlers.append(subcrawler)
+        temp_drive.close()
+
+    @classmethod
+    def super_crawling(cls, n_page):
+        for i in cls.crawlers:
+            try:
+                i.core.crawl_multipage(n_page)
+                i.done = True
+            except:
+                i.error = True
