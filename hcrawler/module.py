@@ -438,7 +438,8 @@ class TikiCrawler(func):
         for col in self.all_data.columns:
             part = func.wrangling(self.all_data[col], delimiter)
             data.append(part)
-        self.wrangled_data = pd.concat(data, axis = 1)
+        concat_data = pd.concat(data, axis = 1)
+        self.wrangled_data = concat_data.drop_duplicates(subset = ['name']).reset_index(drop = True)
         self.be_wrangled = True
     
     def close(self):
