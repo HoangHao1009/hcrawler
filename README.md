@@ -25,7 +25,7 @@ n_browers = 5
 #CSS SELECTOR for elements (those behind are collected in Feb-4-2024)
 prod_link_elem = '.style__ProductLink-sc-1axza32-2.ezgRFw.product-item'
 category_bar_elem = '.breadcrumb'
-image_elem = '.image-wrapper'
+image_elem = '.image-frame'
 price_elem = '.product-price__current-price'
 discount_elem = '.product-price__discount-rate'
 sales_quantity_elem = '.styles__StyledQuantitySold-sc-1swui9f-3.bExXAB'
