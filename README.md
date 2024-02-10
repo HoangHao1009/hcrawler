@@ -2,6 +2,8 @@
 Crawl Tiki web data using selenium
 A easy-used tool to crawl data from Tiki - you just need put a link of category you'd like to crawl.
 
+An application of this library is my another project: [hbookrecommender](https://github.com/HoangHao1009/hbookrecommender)
+You can view it at: https://hbookrecommender.streamlit.app/
 ### Library installation
 
 ```python
